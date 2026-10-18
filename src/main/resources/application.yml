@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: kioskonube-carrito-service
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:kioskonube}
+    username: ${DB_USER:kioskoadmin}
+    password: ${DB_PASSWORD:}
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: carrito     # schema propio de este microservicio
+        hbm2ddl:
+          create_namespaces: true
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: 5672
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+  # Seguridad: el JWT lo emite Amazon Cognito (IDaaS)
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${COGNITO_ISSUER:https://cognito-idp.us-east-1.amazonaws.com/us-east-1_fWu8FjuqE}
+
+server:
+  port: 8082
+
+# Nombres de mensajería centralizados
+kioskonube:
+  mensajeria:
+    carrito:                      # lo que este servicio PUBLICA (lo consume ordenes-service)
+      exchange: carrito.exchange
+      routing-key: carrito.checkout
